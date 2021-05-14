@@ -1,2 +1,4 @@
-#test file
-#test2
+install.packages("COVID19")
+
+# load the package
+library("COVID19")
