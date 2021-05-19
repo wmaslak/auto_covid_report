@@ -1,1 +1,0 @@
-print("Hi, I was sourced by .Rprofile!")
