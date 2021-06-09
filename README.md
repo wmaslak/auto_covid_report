@@ -56,7 +56,7 @@ Start and end dates defining the time range for which the pandemic data will be 
 
 Names of the mobility measures from [Google Mobility Reports](https://www.google.com/covid19/mobility/) to be used.
 
-**Format:** *A comma separated list of columns or ```all``` to use all of available measures.*
+**Format:** *Selection from a list*
 
 Available measures (see [here](https://www.google.com/covid19/mobility/) for details):
 
@@ -76,17 +76,24 @@ WARNING: The mobility reports [webpage](https://www.google.com/covid19/mobility/
  
 **Format:** *A comma separated list of indicator codes*
 
+#### Measures of pandemic
+
+COVID-19 variables to be used in the report. See [here](https://covid19datahub.io/articles/doc/data.html#covid-19-variables) for details and available measures.
+
+**Format:** *Selection from a list*
+
 #### Measures of restrictions 
 
-Policy indicators to be used in the report. See [here](https://covid19datahub.io/articles/doc/data.html#policy-measures) for detail and available measures.
+Policy indicators to be used in the report. See [here](https://covid19datahub.io/articles/doc/data.html#policy-measures) for details and available measures.
 
-**Format:** *A comma separated list of variable names or all to use ```all``` of them*
+**Format:** *Selection from a list*
 
 #### Vintage data
 
 A logical value to be passed directly to the ```covid19()``` function. Use ```True``` to get the data available at the end of the selected time range.
 
 From docs: 
+
 > Retrieve the snapshot of the dataset that was generated at the end date instead of using the latest version
 
 Useful for reproducibility purposes.
@@ -97,24 +104,27 @@ Useful for reproducibility purposes.
 
 Select elements to include in the reports.
 
-**Format:** *Checkbox*
+**Format:** *Checkbox and list selection*
 
 ### Structure 
 
 The report has three main sections and one optional section which is available only for selected periods titled as:
 
-0. Descriptive statistics
-1. Countries reactions
-2. Differences in countries vs. differences in COVID
-3. Vaccinations (optional)
+1. Introduction
+2. Countries reactions
+3. Differences in countries vs. differences in COVID
+4. Vaccinations (can be generated only for periods after 2021-01-02)
 
-
+Each section can be included or excluded from the report- ( *WARNING:-
+technically, one can generate an empty report* ). 
 
 The following paragraphs describe each of the sections in detail.
 
-#### 0. Descriptive statistics
+#### 1. Introduction
 
-This section aims to provide
+This section aims to provide a sneak-peak of the data that is used in further sections
+of the report. It includes summary of the chosen parameters as well as some basic
+descriptive stats and visualizations.
 
 
 [^1]: https://covid19datahub.io/

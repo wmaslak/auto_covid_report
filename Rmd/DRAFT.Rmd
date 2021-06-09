@@ -1,0 +1,167 @@
+---
+title: "COVID REPORT DRAFT"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+params:
+  countries:
+    label: 'Countries (comma separated alpha-3 ISO codes)'
+    value: "POL,FRA"
+    input: text
+  start_date:
+    label: "Start date"
+    value: 2020-03-01
+    min: 2019-06-01
+    format: "dd-mm-yyyy"
+    input: date
+  end_date:
+    label: "End date"
+    value: 2020-06-01
+    min: 2019-06-02
+    format: "dd-mm-yyyy"
+    input: date
+  measures_mob:
+    label: 'Measures of mobility'
+    value: "choose mobility measures"
+    choices: ["retail_and_recreation_percent_change_from_baseline","grocery_and_pharmacy_percent_change_from_baseline","parks_percent_change_from_baseline","transit_stations_percent_change_from_baseline","workplaces_percent_change_from_baseline","residential_percent_change_from_baseline"]
+    multiple: TRUE
+    input: select
+  measures_soc:
+    label: 'Measures of socio-economic characteristics (comma separated named list WB indicators)'
+    value: "NY.GDP.MKTP.CD,SH.MED.BEDS.ZS,SH.UHC.OOPC.25.TO"
+    input: text
+  measures_res:
+    label: 'Measures of restrictions'
+    value: "stringency_index"
+    choices: ["school_closing","workplace_closing","cancel_events","gatherings_restrictions","transport_closing","stay_home_restrictions","internal_movement_restrictions","international_movement_restrictions","information_campaigns","testing_policy","contact_tracing","stringency_index"]
+    multiple: TRUE
+    input: select
+  measures_cov:
+    label: 'Measures of pandemic'
+    value: "confirmed"
+    choices: ["confirmed","tests","hosp","icu","vent","deaths","recovered","vaccines"]
+    multiple: TRUE
+    input: select
+  vintage:
+    label: 'Use vintage data (from End date)'
+    value: FALSE
+    input: checkbox
+  sections:
+    choices: ["Introduction","Countries' reactions","Differences in countries vs. differences in COVID","Vaccinations"]
+    label: 'Sections'
+    value: ["Introduction","Countries' reactions","Differences in countries vs. differences in COVID","Vaccinations"]
+    multiple: TRUE
+    input: select
+  plots:
+    label: 'Include plots?'
+    value: TRUE
+    input: checkbox
+  text:
+    label: 'Include text?'
+    value: TRUE
+    input: checkbox
+---
+
+```{r chunk options, message=FALSE, warning=FALSE, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, echo=FALSE)
+```
+
+```{r load packages}
+requiredPackages = c("dplyr","ggplot2","COVID19","wbstats","countrycode")
+for(i in requiredPackages){if(!require(i,character.only = TRUE)) install.packages(i)}
+
+library("dplyr","ggplot2","COVID19","wbstats")
+library("countrycode")
+
+
+```
+
+
+```{r parse params}
+# parsing parameters and creating relevant columns for subsetting data
+
+## country
+country <- strsplit(params$countries,',') %>% unlist()
+country_names <- countrycode(country,'iso3c','country.name')
+## restrictions
+cols_res <- params$measures_res
+
+## mobility 
+gmr_bool <- ifelse(params$measures_mob == "choose mobility measures",
+              FALSE,
+              TRUE)
+
+cols_mob <- ifelse(!gmr_bool, c('population'), params$measures_mob)
+
+## pandemic
+cols_cov <- c(params$measures_cov,'population')
+
+## indicators
+indicators<- strsplit(params$measures_soc,',') %>% unlist()
+# colnames will be set later!
+
+```
+
+
+```{r data, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
+# get wb data with gapfill = TRUE and take only the latest date for each country
+wb <- wb_data(indicators, country = country, mrv = 5, freq = 'Y', gapfill = TRUE )%>% 
+  group_by(country) %>% 
+  arrange(date) %>%  
+  slice(n())
+
+### delete cols with NA only
+wb <- Filter(function(x)!all(is.na(x)), wb)
+### retrieve nice names of indicators and rename columns
+cols_soc <- lapply(colnames(wb)[-c(1:4)], function(c) attr(wb[[c]],"label")) %>% 
+  unlist()
+colnames(wb)[-c(1:4)] <- cols_soc
+
+
+
+# get covid
+if (!gmr_bool){
+data <- covid19(country = country,
+                level = 1,
+                start = params$start_date,
+                end = params$end_date,
+                vintage = params$vintage)
+}else{
+         data <- covid19(country = country,
+                level = 1,
+                start = params$start_date,
+                end = params$end_date,
+                vintage = params$vintage,
+                gmr=gmr)  
+                
+}
+
+# join wb to covid
+data <- merge(data,wb[-c(1,3,4)], by.x = 'id', by.y = 'iso3c' )
+
+# join columns
+cols_all <- c('id','date',cols_cov,cols_res,cols_soc,cols_mob) %>% 
+  unique()
+# subset data
+data <- data[cols_all]
+
+```
+
+```{r sections show}
+intro <- ifelse('Introduction' %in% params$sections, T,F)
+
+```
+
+
+
+```{r, eval = intro, child='Introduction.Rmd'}
+
+```
+
+
+```{r}
+#summary(data)
+```
+
