@@ -173,8 +173,8 @@ pre code {
 <h5>submitted as a final project for the Reproducible Research course (WNE UW, 2021)</h5>
 <hr />
 </div>
-<div id="quick-intro" class="section level3">
-<h3>Quick intro</h3>
+<div id="content-quick-intro" class="section level3">
+<h3>Content quick intro</h3>
 <p>This tool gives users a simple way to create appealing reports that allow readers to observe the pandemic across different countries and periods. It is intended to be used by all those who want to gain and share insight into the basic, data-based facts about the COVID19 pandemic without unnecessary fuss.</p>
 <p>The project’s central guiding question can be stated as follows:</p>
 <blockquote>
@@ -198,13 +198,10 @@ pre code {
 <ul>
 <li>countries</li>
 <li>time period</li>
-<li>measures of mobility</li>
 <li>measures of socio-economic characteristics</li>
 <li>measures of restrictions</li>
 <li>vintage data</li>
 <li>sections</li>
-<li>include plots</li>
-<li>include text</li>
 </ul>
 <p>The following paragraphs describe each parameter in detail</p>
 <div id="countries" class="section level4">
@@ -216,24 +213,6 @@ pre code {
 <h4>Time period</h4>
 <p>Start and end dates defining the time range for which the pandemic data will be used.</p>
 <p><strong>Format:</strong> <em>The dates are selected in relevant fields</em></p>
-</div>
-<div id="measures-of-mobility" class="section level4">
-<h4>Measures of mobility</h4>
-<p>Names of the mobility measures from <a href="https://www.google.com/covid19/mobility/">Google Mobility Reports</a> to be used.</p>
-<p><strong>Format:</strong> <em>Selection from a list</em></p>
-<p>Available measures (see <a href="https://www.google.com/covid19/mobility/">here</a> for details):</p>
-<ul>
-<li>“retail_and_recreation_percent_change_from_baseline”</li>
-<li>“grocery_and_pharmacy_percent_change_from_baseline”</li>
-<li>“parks_percent_change_from_baseline”<br />
-</li>
-<li>“transit_stations_percent_change_from_baseline”<br />
-</li>
-<li>“workplaces_percent_change_from_baseline”<br />
-</li>
-<li>“residential_percent_change_from_baseline”</li>
-</ul>
-<p>WARNING: The mobility reports <a href="https://www.google.com/covid19/mobility/">webpage</a> claims that the data will be available for a limited period of time. Therefore, this feature may become unavailable in the future.</p>
 </div>
 <div id="measures-of-socio-economic-characteristics" class="section level4">
 <h4>Measures of socio-economic characteristics</h4>
@@ -276,10 +255,22 @@ pre code {
 <li>Vaccinations (can be generated only for periods after 2021-01-02)</li>
 </ol>
 <p>Each section can be included or excluded from the report- ( <em>WARNING:- technically, one can generate an empty report</em> ).</p>
-<p>The following paragraphs describe each of the sections in detail.</p>
+<p>The following paragraphs briefly describe each of the sections.</p>
 <div id="introduction" class="section level4">
 <h4>1. Introduction</h4>
 <p>This section aims to provide a sneak-peak of the data that is used in further sections of the report. It includes summary of the chosen parameters as well as some basic descriptive stats and visualizations.</p>
+</div>
+<div id="countries-reactions" class="section level4">
+<h4>2. Countries reactions</h4>
+<p>In this section compares countries’ policy reactions to the pandemic focusing on the timing and severity of restrictions imposed.</p>
+</div>
+<div id="differences-in-countries-vs.-differences-in-covid" class="section level4">
+<h4>3. Differences in countries vs. differences in COVID</h4>
+<p>This section aims to provide intuitions whether in the group of analyzed countries the course of pandemic was similar for similar countries.</p>
+</div>
+<div id="vaccinations" class="section level4">
+<h4>4. Vaccinations</h4>
+<p>This section can be generated only for periods which include the period after 2021-01-02 for which vaccination data is available. It basically compares the speed of vaccination process across countries.</p>
 </div>
 </div>
 </div>
