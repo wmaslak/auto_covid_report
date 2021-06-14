@@ -160,7 +160,6 @@ section_vacc <- ifelse("Vaccinations" %in% params$sections &
 
 ```
 
-
 ```{r reactions, eval = section_react, child='sections/Reactions.Rmd'}
 
 ```

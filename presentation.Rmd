@@ -1,0 +1,75 @@
+---
+title: "RR project"
+author: "Wojciech Maślakiewicz"
+date: "10 06 2021"
+output: 
+  ioslides_presentation:
+    incremental: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Plan
+
+- Result
+- Technical stuff
+- Process
+
+## Result
+
+- Automated report comparing the course of pandemics across countries 
+- Many parameters, lots of posibilities
+- Let's see it!
+
+## Technical stuff - using others' work
+
+-Brilliant COVID-19 Data Hub project and package (also for Python, Scala, Matlab and others!)
+
+-World Bank data (a bit crooked implementation, had to do a workaround)
+
+-DTW (Dynamic time warping)
+
+## DTW
+```{r, out.height= "450px", echo=FALSE}
+knitr::include_graphics("fig/warp.jpg")
+```
+
+
+## Technical stuff - setup
+
+-Structured Rmd (master + sections)
+
+-R virtual environment
+
+-HTML vs PDF
+
+## Technical stuff - reproducibility threats
+
+- Data changes?
+
+- Vintage parameter!
+
+- Data disappers?
+
+- Don't use it!
+
+- Some parameters throw error because something is badly coded?
+
+- Quite likely! Use different parameters :)
+
+## Process
+
+- My (bad) coding habits
+
+- Structure + planning
+
+- DDD (Documentation driven development)
+
+- Terrifying! (but effective)
+
+- Learned a lot!
+
+## Thank you!
+- Questions?
