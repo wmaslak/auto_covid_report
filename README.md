@@ -5,11 +5,28 @@
 ---
 ## Quick intro
 
+#### Software
+
+The project was prepared using:
+- RStudio Version 1.4.1106
+- R version 4.0.5
+- renv package 0.13.2
+- MS Windows 10 Home (20H2) operating system having Polish set as system language.
+
+All other information about packages are handled by the R virtual environment (see usage intro below).
+
 #### Usage quick intro
 
-1. Download the whole repo
-2. Make sure to have the `renv` package installed 
-3. Startup the project using ``
+1. Download the whole repo and extrac it in a separate directory.
+2. Make sure to have the `renv` package installed.
+3. Startup the project using `auto_covid_report.Rproj`.
+4. Type `renv::init()` and choose the `1: Restore the project from the lockfile.` option by typing `1` and enter.
+5. Open the `master_report.Rmd` from the `Rmd` directory.
+6. Click the `Knit options` button in the upper bar (small white triangle next to Knit) and choose `Knit with parameters`.
+7. Specify the parameters of your report 
+8. Click `Knit` and wait for the report to be generated.
+
+Note: Knitting may initially take a while, but the data is cached, so subsequent reports should be generated quicker.
 
 #### Content quick intro
 
@@ -90,9 +107,9 @@ Useful for reproducibility purposes.
 
 **Format:** *Checkbox*
 
-### Sections, plots, text
+### Sections
 
-Select elements to include in the reports.
+Select secitons to include in the reports.
 
 **Format:** *Checkbox and list selection*
 
