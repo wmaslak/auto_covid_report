@@ -1,0 +1,118 @@
+---
+title: "Reactions"
+output: html_document
+---
+
+# Countries' reactions
+
+```{r first last country}
+first <- data %>% 
+  filter(date == min(data$date)) %>%  
+  arrange(-confirmed) %>%  
+  select(id) %>% 
+  first() %>% 
+  first() %>% 
+  countrycode(origin = "iso3c", destination = 'country.name')
+
+last <- data %>% 
+  filter(date == min(data$date)) %>%  
+  arrange(confirmed) %>%  
+  select(id) %>% 
+  first() %>% 
+  first() %>% 
+  countrycode(origin = "iso3c", destination = 'country.name')
+
+
+```
+
+
+`r first` was the country that experienced the highest number of total confirmed infections at
+the beginning of the analyzed period, while `r last` had the fewest number of confirmed cases.
+
+Let's examine how the countries reacted to pandemic in that time.
+
+## Course of pandemic vs. measures enforced
+
+The figures below depict how countries reacted to the pandemic.
+The y-axis shows the intensity of restrictions indicated by various measures while
+x-axis shows, depending on the variant, number of confirmed cases or the timeline.
+
+### Stringency {.tabset}
+
+Stringency measures the overall 'severity' of the lockdown policy.
+
+Below we find graphs of stringency_index plotted against time and number of 
+confirmed COVID-19 cases.
+
+#### ...versus confirmed cases
+
+```{r}
+
+data %>%
+  mutate(confirmed_per_100k_pop = confirmed/population*100000) %>% 
+  replace(is.na(.), 0) %>% 
+  select(id,date,confirmed_per_100k_pop,stringency_index) %>% 
+  pivot_longer(-c(id,date,confirmed_per_100k_pop)) %>% 
+  ggplot()+
+  geom_line(aes(x=confirmed_per_100k_pop,y = value, color = id))+
+  ggtitle("Stringency index")
+
+```
+
+
+#### ...in time
+
+```{r}
+
+data %>%
+  mutate(confirmed_per_100k_pop = confirmed/population*100000) %>% 
+  replace(is.na(.), 0) %>% 
+  select(id,date,confirmed_per_100k_pop,stringency_index) %>% 
+  pivot_longer(-c(id,date,confirmed_per_100k_pop)) %>% 
+  ggplot()+
+  geom_line(aes(x=date,y = value, color = id))+
+  ggtitle("Stringency index")
+
+```
+
+
+### Other restrictions {.tabset}
+
+Let us also analyze particular restrictive actions of the governments.
+
+#### ...versus confirmed cases
+
+```{r}
+other_measures <- setdiff(cols_res,c('stringency_index'))
+
+for(cnt in unique(data$id)){
+data %>%
+  filter(id == cnt) %>% 
+  mutate(confirmed_per_100k_pop = confirmed/population*100000) %>% 
+  replace(is.na(.), 0) %>% 
+  select(id,date,confirmed_per_100k_pop,other_measures) %>% 
+  pivot_longer(-c(id,date,confirmed_per_100k_pop)) %>% 
+  ggplot()+
+  geom_line(aes(x=confirmed_per_100k_pop, color = name ,y = value))+
+    ggtitle(countrycode(cnt,'iso3c','country.name')) -> plot
+  print(plot)}
+```
+
+#### ...in time
+
+```{r}
+
+
+for(cnt in unique(data$id)){
+data %>%
+  filter(id == cnt) %>% 
+  mutate(confirmed_per_100k_pop = confirmed/population*100000) %>% 
+  replace(is.na(.), 0) %>% 
+  select(id,date,confirmed_per_100k_pop,other_measures) %>% 
+  pivot_longer(-c(id,date,confirmed_per_100k_pop)) %>% 
+  ggplot()+
+  geom_line(aes(x=date, color = name ,y = value))+
+    ggtitle(countrycode(cnt,'iso3c','country.name'))-> plot
+  print(plot)}
+```
+

@@ -1,0 +1,58 @@
+---
+title: "Vaccines"
+output: html_document
+---
+
+# Vaccinations {.tabset}
+
+
+```{r}
+min_dates <- data %>% 
+  filter(!is.na(vaccines)) %>%
+  group_by(id) %>%
+  summarise(min_date = min(date)) 
+
+tot_vacc <- data %>% 
+  fill(vaccines, .direction = 'downup') %>% 
+  group_by(id) %>% 
+  summarise(vaccine = last(vaccines))
+
+```
+
+
+The vaccination process started in **`r min(min_dates$min_date)`** and in the whole period
+a total number of doses administered in all selected countries amounted to **`r sum(tot_vacc$vaccine)`**.
+
+In the graphs below we can see the cumulative number of doses administered and
+number of doses administered per 100k population. It is crucial to mention that 
+the latter value is not number of people vaccinated (only a proxy of it), as some 
+vaccines require multiple doses for full efficiency. 
+
+## Number of doses
+
+```{r}
+
+data %>% 
+  filter(!is.na(vaccines)) %>% 
+  fill(vaccines, .direction = 'downup') %>% 
+  ggplot()+
+  geom_line(aes(x=date,y=vaccines,color = id ))+
+  ylab('cumulative doses of vaccine')+
+  theme_bw()
+
+```
+
+## Number of doses per population
+
+```{r}
+
+data %>% 
+  filter(!is.na(vaccines)) %>% 
+  fill(vaccines, .direction = 'downup') %>% 
+  mutate(vaccines = vaccines/population*100000) %>% 
+  ggplot()+
+  geom_line(aes(x=date,y=vaccines,color = id ))+
+  ylab('cumulative doses of vaccine per 100k population')+
+  theme_bw()
+
+```

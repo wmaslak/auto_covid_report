@@ -1,0 +1,123 @@
+---
+title: "Introduction"
+output: html_document
+---
+```{r source, include=FALSE}
+source("../../R/dictionaries.R")
+```
+
+# Introduction
+
+From Wikipedia:
+
+>Coronavirus disease 2019 (COVID-19) is a contagious disease caused by severe 
+acute respiratory syndrome coronavirus 2 (SARS-CoV-2). The first known case was
+identified in Wuhan, China in December 2019. The disease has since spread worldwide,
+leading to a pandemic.
+
+This report aims to provide insight into the differences in the course of the pandemic in differences countries through simple and informative summaries and graphics.
+
+## Data
+
+### Countries and period
+
+The report focuses on the following list of countries:
+```{r countries used, results='asis'}
+for (cnt in country_names) {
+  cat(
+    paste0('\n',
+          '* ',
+          '**',cnt,'**')
+    )
+}
+
+```
+
+
+in the period **`r params$start_date`** to **`r params$end_date`**. 
+
+### Variables {.tabset}
+
+Comparison between countries is made using a set of `r length(colnames(data)[-c(1:2)])`
+characteristics. Their list and details can be found below.
+
+#### List of variables used
+
+```{r variables used, results = 'asis'}
+
+for (cnt in colnames(data)[-c(1:2)]) {
+  cat(
+    paste0('\n',
+          '* ',
+          '**',cnt,'**')
+    )
+}
+
+```
+
+#### Details
+
+```{r details of variables used, results = 'asis'}
+
+for (col in colnames(data)[-c(1:2)]) {
+  if(col  %in% c(cols_cov,cols_res)){
+  cat(
+    paste0('\n',
+          '* ','**',col,'**',': ','*',dict_all[[col]],'*')
+  )
+  }else{
+       cat(
+    paste0('\n',
+          '* ',
+          '**',col,'**')
+    )
+    }
+}
+cat(paste0('\n\n',dict_all[['details_res']],' on restrictions variables.'))
+
+```
+
+### {-}
+
+## Summary {.tabset}
+
+Let us summarize the dataset:
+
+* number of days analyzed: **`r data$date %>% unique() %>%  length() `**
+* number of World Bank indicators used: **`r cols_soc %>%  length() `**
+* number of pandemic measures used: **`r cols_soc %>%  length() `**
+* number of restrictions measures used: **`r cols_soc %>% length() `**
+
+Mean values of the characteristics:
+
+### Table
+
+```{r summary, results='asis'}
+d <- data %>% 
+  select(!c(2)) %>% #ditch date
+  mutate(across(.cols = c(any_of(cols_cov),
+                  -c(population)),
+                .fns = list(per_100k_population = ~ .x/population*10000) ))%>% # get vars per 100k population
+  group_by(id)  %>% # group by countries
+  summarize(across(.cols=!cols_cov,
+                   .fns = list(mean = ~ mean(.x, na.rm = TRUE)))) %>% 
+  `colnames<-`(gsub('\\$','',colnames(.)))  # substitute special char $ to nothing
+  
+d %>%   knitr::kable(.,format = "html") %>% # table
+  kableExtra::kable_paper() %>%
+  kableExtra::scroll_box(width = "100%", height = "300px")
+
+```
+
+
+### Barplot
+```{r barplot}
+plot_df <- d %>% pivot_longer(-id) #%>%  filter(name != "GDP (current US)_mean")
+plot_df %>% as.data.frame() %>% ggplot()+
+  geom_bar(aes(fill = name,x = id,y = value ),stat = 'identity',position = 'dodge')+
+  scale_y_log10()+ 
+  ylab('value on Log_10 scale')+
+  theme_classic()
+
+```
+

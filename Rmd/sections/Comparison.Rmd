@@ -1,0 +1,114 @@
+---
+title: "Comparison"
+output: html_document
+---
+# Differences in countries vs. differences in COVID - 19
+
+This section tries to answer the question whether countries with similar characteristics
+experienced a similar course of pandemic in the selected period.
+
+
+
+
+## COVID19 vs country characteristics 
+
+In our approach we cluster countries based on how the pandemic evolved.
+The evolution of pandemic is measured using the restrictions variables described in the
+Introduction subsection [Variables].
+
+
+### Dendrograms
+
+```{r echo=FALSE,results='hide',fig.keep='all'}
+
+data_ts_raw <- data
+for(col in cols_cov){
+  if(col!='stringency_index'){
+    data_ts_raw[col] = data[col]/data$population
+    }
+}
+
+data_ts <- data_ts_raw
+
+
+for(measure_res in setdiff(cols_cov,c('population'))){
+
+
+CharTraj <- data_ts[,c('id','date',measure_res)] %>% 
+  replace(is.na(.), 0) %>% 
+  pivot_wider(id_cols = id, names_from = 'date', values_from = measure_res) %>% 
+  column_to_rownames()
+  
+hc <- invisible(tsclust(CharTraj, type = "hierarchical", 
+              distance = "sbd", trace = TRUE,
+              control = hierarchical_control(method = "average")))
+
+
+hcd <- as.dendrogram(hc)
+# Default plot
+plot(hcd, type = "rectangle", axes = F, 
+    main = paste0('Dendrogram for countries clustered by the measure:',measure_res)
+    )
+
+# make columns indicating clusters assignment
+clusts <- cutree(hc,params$nclust)
+
+clust_colname <- paste0(measure_res,'_cluster')
+data[clust_colname] <- 1
+data_ts[clust_colname] <- 1
+
+for(cnt in names(clusts)){
+data[data$id == cnt,clust_colname] <- clusts[cnt]
+data_ts[data_ts$id == cnt,clust_colname] <- clusts[cnt]
+  }
+
+}
+
+
+```
+
+### Time series
+
+```{r}
+for(col in setdiff(cols_cov,c('population'))){
+col_clust <- paste0(col,'_cluster')
+
+data[,col_clust] <- as.factor(data[,col_clust])
+data[col] <- fill(data[col],.direction = 'downup')
+
+data %>% ggplot()+
+  geom_line(aes_string(x='date',y=col,group = 'id',color = col_clust))+
+  ggtitle(paste0('Cluster assignment based on ',col,' clustering.'))->p
+print(p)
+}
+```
+
+### Between cluster comparisons
+
+After clustering we may visually examine if the groups are different in terms of socioeconomic factors.
+ 
+```{r socio by clust, message=FALSE}
+
+cluster_cols <- colnames(data)[grepl('cluster',colnames(data))]
+
+for(col in cluster_cols){
+  #col<-cluster_cols[1]
+  df_plot <- data %>% group_by_at(vars(one_of(col))) %>% summarise(across(.cols = cols_soc,.funs = mean)) %>% unique()
+  
+  measure <- substring(col,1,nchar(col)-8)
+  colnames(df_plot)[1] <- 'm'
+  
+  df_plot %>% 
+    pivot_longer(cols = cols_soc) %>% 
+    ggplot(aes(x = as.integer(m),y = value))+
+    geom_bar(aes(fill=name), stat = 'identity', position = 'dodge')+
+    scale_y_log10()+ 
+    ylab('value on Log_10 scale')+
+    xlab('cluster')+
+    ggtitle(paste0('Means of WB indicators in clusters obtained by measure: ',measure)) +
+    theme_classic() -> p 
+  print(p)
+  }
+
+```
+
